@@ -1,0 +1,1 @@
+Software para la generación de señales cuadrada, compilación de archivos  usando am335 configuración de pins y posterior subida a la BeagleBone Black
