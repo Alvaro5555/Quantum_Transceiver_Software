@@ -39,5 +39,3 @@ PRU software (pru_sw):
 Community support wiki page is at:
 
 http://elinux.org/Ti_AM33XX_PRUSSv2
-
-https://github.com/beagleboard/am335x_pru_package/tree/1e9ff57815b84af028451d23e37482ced711c098
