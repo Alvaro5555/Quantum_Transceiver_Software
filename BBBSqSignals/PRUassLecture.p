@@ -1,7 +1,7 @@
 .origin 0				// start of program in PRU memory
 .entrypoint INITIATIONS	
 
-#include "PRUassTaggDetScript.hp"
+#include "PRUassLecture.hp"
 
 // *** LED routines, so that LED USR0 can be used for some simple debugging
 // *** Affects: r28, r29. Each PRU has its of 32 registers
