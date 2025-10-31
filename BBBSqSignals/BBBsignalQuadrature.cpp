@@ -278,6 +278,13 @@ clock_nanosleep(CLOCK_REALTIME, 0, &ts, NULL); //
 return 0; // All ok
 }*/
 
+int CKPD::Killsignalpru{
+	if (prussdrv_exec_program(PRU_HandlerSynch_NUM, "./PRUkillSignal.bin") == -1){
+		perror("prussdrv_exec_program non successfull writing of PRUkillSignal.bin");
+	}
+return 0;
+}
+
 int CKPD::DisablePRUs(){
 // Disable PRU and close memory mappings
 prussdrv_pru_disable(PRU_ClockPhys_NUM);
@@ -286,6 +293,7 @@ prussdrv_pru_disable(PRU_HandlerSynch_NUM);
 return 0;
 }
 CKPD::~CKPD() {
+	this->Killsignalpru();
 //	this->unexportGPIO();
 	this->DisablePRUs();
 	//fclose(outfile); 
