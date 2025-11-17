@@ -44,6 +44,8 @@
 
 using namespace std;
 
+
+
 namespace exploringBBBCKPD {
 void* exploringBBBCKPD::CKPD::ddrMem = nullptr; // Define and initialize ddrMem
 void* exploringBBBCKPD::CKPD::sharedMem = nullptr; // Define and initialize
@@ -54,7 +56,7 @@ unsigned int* exploringBBBCKPD::CKPD::sharedMem_int = nullptr;// Define and init
 unsigned int* exploringBBBCKPD::CKPD::pru0dataMem_int = nullptr;// Define and initialize
 unsigned int* exploringBBBCKPD::CKPD::pru1dataMem_int = nullptr;// Define and initialize
 int exploringBBBCKPD::CKPD::mem_fd = -1;// Define and initialize 
-
+CKPD * g_agentInstance= nullptr;
 CKPD::CKPD(){// Redeclaration of constructor GPIO when no argument is specified
 	// Initialize structure used by prussdrv_pruintc_intc
 	// PRUSS_INTC_INITDATA is found in pruss_intc_mapping.h
@@ -87,8 +89,8 @@ CKPD::CKPD(){// Redeclaration of constructor GPIO when no argument is specified
 	
 	    // Load and execute the PRU program on the PRU1
 	    //pru1dataMem_int[0]=static_cast<unsigned int>(this->NumClocksQuarterPeriodPRUclock+this->AdjCountsFreq); // set the number of clocks that defines the Quarter period of the clock. 
-	if (prussdrv_exec_program(PRU_ClockPhys_NUM, "./PRUassTrigSigScriptHist1Sig.bin") == -1){
-		perror("prussdrv_exec_program non successfull writing of PRUassTrigSigScriptHist1Sig.bin");
+	if (prussdrv_exec_program(PRU_ClockPhys_NUM, "./PRUassTrigSigScriptHist4Sig.bin") == -1){
+		perror("prussdrv_exec_program non successfull writing of PRUassTrigSigScriptHist4Sig.bin");
 	}
 	//prussdrv_pru_enable(PRU_ClockPhys_NUM);
 	sleep(20);
@@ -119,6 +121,11 @@ CKPD::CKPD(){// Redeclaration of constructor GPIO when no argument is specified
 	this->requestWhileWait = this->SetWhileWait();// Used with non-busy wait
 	//this->TimePointClockCurrentInitialMeas=this->TimePointClockCurrentFinal-std::chrono::nanoseconds(this->duration_FinalInitialDriftAuxArrayAvg);// Important that it is discounted the time to enter the interrupt so that in this way the signal generation in the PRU is reference to an absolute time.
 	cout << "Generating clock output..." << endl;
+}
+void handle_signal(int sig){
+ if(g_agentInstance != nullptr){
+  g_agentInstance -> m_exit();
+ }
 }
 int CKPD::HandleInterruptSynchPRU(){ // Uses output pins to clock subsystems physically generating qubits or entangled qubits
 clock_nanosleep(CLOCK_REALTIME,TIMER_ABSTIME,&requestWhileWait,NULL);//CLOCK_TAI,CLOCK_REALTIME// https://opensource.com/article/17/6/timekeeping-linux-vms
@@ -278,10 +285,10 @@ clock_nanosleep(CLOCK_REALTIME, 0, &ts, NULL); //
 return 0; // All ok
 }*/
 
-int CKPD::Killsignalpru{
-	if (prussdrv_exec_program(PRU_HandlerSynch_NUM, "./PRUkillSignal.bin") == -1){
-		perror("prussdrv_exec_program non successfull writing of PRUkillSignal.bin");
-	}
+int CKPD::Killsignalpru(){
+ if (prussdrv_exec_program(PRU_HandlerSynch_NUM, "./PRUkillSignal.bin") == -1){
+  perror("prussdrv_exec_program non successfull writing of PRUkillSignal.bin");
+ }
 return 0;
 }
 
@@ -296,6 +303,7 @@ CKPD::~CKPD() {
 	this->Killsignalpru();
 //	this->unexportGPIO();
 	this->DisablePRUs();
+	sleep(20);
 	//fclose(outfile); 
 	prussdrv_exit();
 	//munmap(ddrMem, 0x0FFFFFFF);
@@ -313,6 +321,8 @@ int main(int argc, char const * argv[]){
  
  CKPD CKPDagent; // Initiate the instance
  
+ g_agentInstance= &CKPDagent;
+ signal(SIGINT,handle_signal);
  CKPDagent.m_start(); // Initiate in start state.
  
  bool isValidWhileLoop=true;
@@ -338,7 +348,8 @@ int main(int argc, char const * argv[]){
            }
 
            default: {
-               // ErrorHandling Throw An Exception Etc.
+           	isValidWhileLoop = false;
+	   	break;  // ErrorHandling Throw An Exception Etc.
            }
 
         } // switch

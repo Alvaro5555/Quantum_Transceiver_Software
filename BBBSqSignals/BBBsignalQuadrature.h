@@ -161,8 +161,7 @@ public:	// Functions/Methods
         // Sempahore
 	void acquire();
 	void release();
-	~CKPD();  //destructor
-
+	~CKPD();  //destructo
 private: // Functions/Methods
 	// Task manager priority
 	bool setMaxRrPriority(int PriorityValAux);
@@ -175,6 +174,7 @@ private: // Functions/Methods
 	struct timespec SetWhileWait();
 	// PRU
 	int LOCAL_DDMinit();
+	int Killsignalpru();
 	int DisablePRUs();
 	// Median filter
 	double DoubleMedianFilterSubArray(double* ArrayHolderAux);
