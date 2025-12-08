@@ -1,7 +1,7 @@
 
-cd /media/debian/sd 
+#cd /media/debian/sd 
 ./BBB_Config_pins_pru.sh
-./BBB_Config_pins_pwm.sh
+#./BBB_Config_pins_pwm.sh
 
 sleep "30"
 
