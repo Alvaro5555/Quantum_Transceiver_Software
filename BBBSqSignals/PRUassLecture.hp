@@ -1,7 +1,7 @@
-// PRUassTaggDetScript.hp
+// PRUassLecture.hp
 
-#ifndef __PRUCODE_PRUassTaggDetScript_HP__
-#define __PRUCODE_PRUassTaggDetScript_HP__
+#ifndef __PRUCODE_PRUassLecture_HP__
+#define __PRUCODE_PRUassLecture_HP__
 
 // Definitions
 
@@ -39,6 +39,7 @@
 #define GPIO1_BANK 0x4804c000 // this is the address of the BBB GPIO1 Bank Register for PR0
 #define GPIO2_BANK 0x481ac000 // this is the address of the BBB GPIO2 Bank Register for PRU1. We set bits in special locations in offsets here to put a GPIO high or low.
 #define GPIO3_BANK 0x481AE000
+#define GPIO_DATAIN 0x138
 
 #define GPIO_CLEARDATAOUToffset 0x190 //Offsets from GPIOX_BANK. We set a GPIO low by writing to this offset. In the 32 bit value we write, if a bit is 1 the 
 // GPIO goes low. If a bit is 0 it is ignored.
@@ -92,7 +93,7 @@
 //
 //.assign Global, r2, *, global
 
-#endif // __PRUCODE_PRUassTaggDetScript_HP__
+#endif // __PRUCODE_PRUassLecture_HP__
 
 
 

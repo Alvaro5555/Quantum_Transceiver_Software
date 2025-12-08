@@ -1,9 +1,3 @@
-/*
- * Marc Jofre
- * Technical University of Catalonia
- * 2024
- */
-
 #ifndef BBBsignalQuadrature_H_
 #define BBBsignalQuadrature_H_
 #include<string>
@@ -93,14 +87,16 @@ private:// Variables
 	static void *ddrMem, *sharedMem, *pru0dataMem, *pru1dataMem;
 	static void *pru_int;       // Points to start of PRU memory.
 	//static int chunk;
-	static unsigned int *sharedMem_int,*pru0dataMem_int,*pru1dataMem_int;
+	static unsigned int *sharedMem_int;
+	static unsigned int *pru0dataMem_int;
+	static unsigned int *pru1dataMem_int;
 	// Time keeping
 	unsigned long long int TimeClockMarging=1000000;// In nanoseconds. It has to be sufficiently large so that after the sleep the system gets aggresive enough with the busy waiting
 	unsigned long long int TimeAdjPeriod=static_cast<unsigned long long int>(ClockPeriodNanoseconds); // Period at which the clock is adjusted. VEry important parameter
 	double TimePointClockCurrentAdjError=0;
 	double TimePointClockCurrentAdjFilError=0;
 	double TimePointClockCurrentAdjFilErrorIntegral=0;
-	double TimePointClockCurrentAdjFilErrorDerivative=0;
+	double TimePointClockCurrentAdjFilErrorDerSivative=0;
 	double TimePointClockCurrentAdjFilErrorLast=0;
 	double TimePointClockCurrentAdjFilErrorApplied=0;
 	TimePointWatch TimePointClockCurrentInitial=std::chrono::time_point<ClockWatch>(); // Initial updated value of the clock (updated in each iteration)
@@ -119,7 +115,7 @@ private:// Variables
 	unsigned int PRU1QuarterClocksAux=static_cast<unsigned int>(this->NumClocksQuarterPeriodPRUclock);
 	int retInterruptsPRU1;
 	int WaitTimeInterruptPRU1=1500000;
-	int WaitTimeInterruptPRU0=7500000; // In microseconds
+	int WaitTimeInterruptPRU0=15000000; // In microseconds
 	unsigned int MinNumPeriodColcksPRUnoHalt=1000;// Protection againts very low numbers
 	unsigned int MaxNumPeriodColcksPRUnoHalt=200000000;// Protecion agains very large numbers
 	// Median filter implementation
@@ -161,8 +157,7 @@ public:	// Functions/Methods
         // Sempahore
 	void acquire();
 	void release();
-	~CKPD();  //destructor
-
+	~CKPD();  //destructo
 private: // Functions/Methods
 	// Task manager priority
 	bool setMaxRrPriority(int PriorityValAux);
@@ -175,6 +170,7 @@ private: // Functions/Methods
 	struct timespec SetWhileWait();
 	// PRU
 	int LOCAL_DDMinit();
+	int Killsignalpru();
 	int DisablePRUs();
 	// Median filter
 	double DoubleMedianFilterSubArray(double* ArrayHolderAux);

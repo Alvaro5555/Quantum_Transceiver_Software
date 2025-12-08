@@ -4,12 +4,15 @@
  // tree overlay!  
  //  
  // Assemble in BBB with:  
- // pasm -b PRUassTrigSigScriptHist4Sig.p
+ // pasm -b PRUkillSignal.p
  // https://www.ofitselfso.com/BBBCSIO/Help/BBBCSIOHelp_PRUPinInOutExamplePASMCode.html
  
 .origin 0				// start of program in PRU memory
-.entrypoint EXIT			// program entry point (for debbuger)
+.entrypoint EXIT			// program entry point (for debbuge
+
 EXIT:
+	MOV	r30, 0x00000000
+	MOV	r31, 0x00000000
 	HALT
 ERR:	// Signal error
 	HALT

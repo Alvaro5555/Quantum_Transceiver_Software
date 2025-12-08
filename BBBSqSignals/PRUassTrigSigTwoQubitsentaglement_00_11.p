@@ -77,10 +77,8 @@ INITIATIONS:
 	SBBO	r0, r10, 0, 4//SBCO	r0, CONST_PRUDRAM, 0, 4  // Load the base address of PRU0 Data RAM into C
 	
 	MOV	r30, 0
-	MOV	r14, 3 // ON state
+	MOV	r14, 2 // ON state
 	MOV	r15, 2 // OFF state
-	MOV	r11, 0x02220111
-	MOV	r12, 0x08880444
 	LDI	r4, 0 // zeroing
 	
 //	LED_ON	// just for signaling initiations
@@ -96,142 +94,74 @@ CMDLOOP2:// Double verification of host sending start command
 
 STATE1QUBIT://Qubit1 0 Qubit2 0 base 1
 	MOV		r20, PULSE_COUNT
-SIGNALON1STATE1:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w0, r11.w0 // Double channels 1. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
+SIGNALONSTATE1:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
+	MOV		r30,  0x00000005// Double channels 1. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
 	MOV		r5, r14
-SIGNALON1DELSTATE1:
+SIGNALONDELSTATE1:
 	SUB		r5, r5, 1
-	QBNE	SIGNALON1DELSTATE1, r5, 0
+	QBNE	SIGNALONDELSTATE1, r5, 0
 //	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
-SIGNALOFF1STATE1: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w0, 0x0000 // All off
-	MOV		r5, r15
-	LDI		r4, 0
-	LDI		r4, 0
-//	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALOFF1DELSTATE1:
-	SUB		r5, r5, 1
-	QBNE	SIGNALOFF1DELSTATE1, r5, 0
-SIGNALON3STATE1:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w4, r11.w4 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
-	MOV		r5, r14
-SIGNALON3DELSTATE1:
-	SUB		r5, r5, 1
-	QBNE	SIGNALON3DELSTATE1, r5, 0
-//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
-SIGNALOFF3STATE1: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w4, 0x0000 // All off
+SIGNALOFFSTATE1: // Make use of this dead time to instantly correct for intra relative frequency sifference
+	MOV		r30, 0x00000000 // All off
 	MOV		r5, r15
 //	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALOFF3DELSTATE1:
+SIGNALOFFDELSTATE1:
 	SUB		r5, r5, 1
-	QBNE	SIGNALOFF3DELSTATE1, r5, 0
+	QBNE	SIGNALOFFDELSTATE1, r5, 0
 STATE1QUBITCOUNT:
 	SUB		r20, r20, 1
-	QBNE	SIGNALON1STATE1, r20, 0
-
+	QBNE	SIGNALONSTATE1, r20, 0
 
 STATE2QUBIT: //Qubit1 1 Qubit2 1 base 1
 	MOV		r20, PULSE_COUNT
-SIGNALON2STATE2:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w2, r11.w2 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
+SIGNALONSTATE2:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
+	MOV		r30, 0x0000000A // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
 	MOV		r5, r14
-SIGNALON2DELSTATE2:
+SIGNALONDELSTATE2:
 	SUB		r5, r5, 1
-	QBNE	SIGNALON2DELSTATE2, r5, 0
-//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
-SIGNALOFF2STATE2: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w2, 0x0000 // All off
-	MOV		r5, r15
-	LDI		r4, 0
-	LDI		r4, 0
-//	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALOFF2DELSTATE2:
-	SUB		r5, r5, 1
-	QBNE	SIGNALOFF2DELSTATE2, r5, 0
-SIGNALON4STATE2:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w6, r11.w6 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
-	MOV		r5, r14
-SIGNALON4DELSTATE2:
-	SUB		r5, r5, 1
-	QBNE	SIGNALON4DELSTATE2, r5, 0
-//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
-SIGNALOFF4STATE2: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w6, 0x0000 // All off
+	QBNE	SIGNALONDELSTATE2, r5, 0
+SIGNALOFFSTATE2: // Make use of this dead time to instantly correct for intra relative frequency sifference
+	MOV		r30, 0x00000000 // All off
 	MOV		r5, r15
 //	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALOFF4DELSTATE2:
+SIGNALOFFDELSTATE2:
 	SUB		r5, r5, 1
-	QBNE	SIGNALOFF4DELSTATE2, r5, 0
+	QBNE	SIGNALOFFDELSTATE2, r5, 0
+
 STATE2QUBITCOUNT:
 	SUB		r20, r20, 1
-	QBNE	SIGNALON2STATE2, r20, 0
-
+	QBNE	SIGNALONSTATE2, r20, 0
 
 STATE3QUBIT: //Qubit1 0 Qubit2 0 base 2
 	MOV		r20, PULSE_COUNT
 SIGNALON1STATE3:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w0, r11.w0 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
+	MOV		r30, 0x00000005 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
 	MOV		r5, r14
 SIGNALON1DELSTATE3:
 	SUB		r5, r5, 1
 	QBNE	SIGNALON1DELSTATE3, r5, 0
 //	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
 SIGNALOFF1STATE3: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w0, 0x0000 // All off
+	MOV		r30, 0x00000000 // All off
 	MOV		r5, r15
-	LDI		r4, 0
-	LDI		r4, 0
 //	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
 SIGNALOFF1DELSTATE3:
 	SUB		r5, r5, 1
 	QBNE	SIGNALOFF1DELSTATE3, r5, 0
 SIGNALON2STATE3:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w2, r11.w2 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
+	MOV		r30, 0x0000000A // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
 	MOV		r5, r14
 SIGNALON2DELSTATE3:
 	SUB		r5, r5, 1
 	QBNE	SIGNALON2DELSTATE3, r5, 0
 //	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
 SIGNALOFF2STATE3: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w2, 0x0000 // All off
+	MOV		r30, 0x00000000 // All off
 	MOV		r5, r15
-	LDI		r4, 0
-	LDI		r4, 0
 SIGNALOFF2DELSTATE3:
 	SUB		r5, r5, 1
 	QBNE	SIGNALOFF2DELSTATE3, r5, 0
 //	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALON3STATE3:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w4, r11.w4 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
-	MOV		r5, r14
-SIGNALON3DELSTATE3:
-	SUB		r5, r5, 1
-	QBNE	SIGNALON3DELSTATE3, r5, 0
-//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
-SIGNALOFF3STATE3: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w4, 0x0000 // All off
-	MOV		r5, r15
-	LDI		r4, 0
-	LDI		r4, 0
-//	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALOFF3DELSTATE3:
-	SUB		r5, r5, 1
-	QBNE	SIGNALOFF3DELSTATE3, r5, 0
-SIGNALON4STATE3:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
-	MOV		r30.w6, r11.w6 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
-	MOV		r5, r14
-SIGNALON4DELSTATE3:
-	SUB		r5, r5, 1
-	QBNE	SIGNALON4DEL, r5, 0
-//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
-SIGNALOFF4STATE3: // Make use of this dead time to instantly correct for intra relative frequency sifference
-	MOV		r30.w6, 0x0000 // All off
-	MOV		r5, r15
-//	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
-SIGNALOFF4DELSTATE3:
-	SUB		r5, r5, 1
-	QBNE	SIGNALOFF4DELSTATE3, r5, 0
 STATE3QUBITCOUNT:
 	SUB		r20, r20, 1
 	QBNE	SIGNALON1STATE3, r20, 0
@@ -239,9 +169,37 @@ STATE3QUBITCOUNT:
 
 STATE4QUBIT: //Qubit1 1 Qubit2 1 base 2
 	MOV		r20, PULSE_COUNT
+SIGNALON1STATE4:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
+	MOV		r30, 0x0000000A // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
+	MOV		r5, r14
+SIGNALON1DELSTATE4:
+	SUB		r5, r5, 1
+	QBNE	SIGNALON1DELSTATE4, r5, 0
+//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
+SIGNALOFF1STATE4: // Make use of this dead time to instantly correct for intra relative frequency sifference
+	MOV		r30, 0x00000000 // All off
+	MOV		r5, r15
+//	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
+SIGNALOFF1DELSTATE4:
+	SUB		r5, r5, 1
+	QBNE	SIGNALOFF1DELSTATE4, r5, 0
+SIGNALON2STATE4:	// The odd signals actually carry the signal (so it is half of the period, adjusting the on time); while the even signals are the half period alway off
+	MOV		r30, 0x00000005 // Double channels 2. write to magic r30 output byte 0. Half word bytes= 7,6,5,4,3,2,1,0 bits
+	MOV		r5, r14
+SIGNALON2DELSTATE4:
+	SUB		r5, r5, 1
+	QBNE	SIGNALON2DELSTATE4, r5, 0
+//	LDI		r4, 0 // Controlled intentional delay to account for the fact that QBNE takes one extra count when it does not go through the barrier
+SIGNALOFF2STATE4: // Make use of this dead time to instantly correct for intra relative frequency sifference
+	MOV		r30, 0x00000000 // All off
+	MOV		r5, r15
+SIGNALOFF2DELSTATE4:
+	SUB		r5, r5, 1
+	QBNE	SIGNALOFF2DELSTATE4, r5, 0
+//	LDI		r4, 0 // Intentionally controlled delay to adjust all sequences (in particular to the last one)
 STATE4QUBITCOUNT:
 	SUB		r20, r20, 1
-	QBNE	STATE4QUBITCOUNT, r20, 0
+	QBNE	SIGNALON1STATE4, r20, 0
 	
 JMPLOOP:
 	LED_OFF
